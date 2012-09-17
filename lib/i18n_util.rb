@@ -19,7 +19,7 @@ class I18nUtil
 
   def self.set_current_load_source(path)
     path = path.to_s[(Rails.root.to_s.length + 1)..-1] if path.to_s.index(Rails.root.to_s) == 0
-    @@current_load_source = TranslationSource.find_by_path(path) || TranslationSource.new(:path => path) unless @@current_load_source and @@current_load_source.path == path
+    @@current_load_source = TranslationSource.find_by_path(path) || TranslationSource.new({:path => path}, without_protection: true) unless @@current_load_source and @@current_load_source.path == path
     if block_given?
       yield
       @@current_load_source = nil
@@ -37,7 +37,7 @@ class I18nUtil
 
       if (locale = I18n::Backend::Locale.where(:code => code).first).nil?
         puts "...CREATE - #{code} - #{name}" if verbose?
-        I18n::Backend::Locale.create!(:code => code, :name => name)
+        I18n::Backend::Locale.create!({:code => code, :name => name}, without_protection: true)
       elsif locale.name == name
         puts "...EXISTS - #{code} - #{name}" if verbose?
       else
